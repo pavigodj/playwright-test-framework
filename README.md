@@ -8,6 +8,6 @@ To set up test framework structure
 To incorportate UI and API tests scripts
 To integrate with reports and display the test report
 
-Step1: Setup venv
-Step 2: requirements.txt
-Step3: pytest.ini
+- [ ] Step1: Setup venv
+- [ ] Step 2: requirements.txt
+- [ ] Step3: pytest.ini
