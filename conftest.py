@@ -5,6 +5,7 @@ import os
 import pytest
 from playwright.async_api import async_playwright
 from playwright.async_api._generated import Browser as Async_Browser
+from playwright.sync_api import Page
 from playwright.sync_api import sync_playwright
 from playwright.sync_api._generated import Browser as Sync_Browser
 
@@ -16,11 +17,23 @@ from utils.settings import BASE_URL_STAGE
 # SYNC FIXTURES
 # ────────────────────────────────
 @pytest.fixture(scope="session")
-def browser_sync() -> Sync_Browser:
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        yield browser
-        browser.close()
+def browser_sync(request):
+    browser_type = request.config.getoption("--browser")
+    if browser_type == "chromium":
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=False)
+            yield browser
+            browser.close()
+    elif browser_type == "firefox":
+        with sync_playwright() as p:
+            browser = p.firefox.launch(headless=False)
+            yield browser
+            browser.close()
+    else:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=False)
+            yield browser
+            browser.close()
 
 
 @pytest.fixture(scope="function")
@@ -34,7 +47,7 @@ def page_sync(browser_sync: Sync_Browser):
 # ASYNC FIXTURES
 # ────────────────────────────────
 @pytest.fixture(scope="session")
-async def browser_async() -> Async_Browser:
+async def browser_async():
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         yield browser
@@ -95,3 +108,17 @@ def base_url(env):
         return BASE_URL_STAGE
     else:
         return BASE_URL_STAGE
+
+
+# ------------------------------------------
+# Navigate to homepage fixture
+# ------------------------------------------
+
+
+@pytest.fixture(scope="function")
+def navigate_to_homepage(page_sync: Page, base_url):
+    try:
+        page_sync.goto(base_url)
+        yield page_sync
+    except (Exception, TimeoutError) as e:
+        pytest.fail(f"Unable to login to {base_url} with exception {e}")
