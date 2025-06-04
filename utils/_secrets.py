@@ -1,0 +1,13 @@
+from __future__ import annotations
+
+ENCRYPTED_PASSWORD = (
+    "gAAAAABoQLLimLfB4Spm_"
+    "HCkYCD592YQhCIAocKAlVjh801EaNhV1jKGk97KO"
+    "-VGbIYaG_HBeAD87bA80SVfn0wphEoOZ21dJQ=="
+)
+PASSWORD_KEY = "jeb1g26OD96rkG7656ln5bBfIVUV5XJVpOW7j4B7RAg="
+ENCRYPTED_USERNAME = (
+    "gAAAAABoQL_kH2XFUVzt7A3wrdxdgsfFU484QMK-"
+    "8sk7SGVsGh15tlrBkY_FfbgyficEmFrYQzAjsnaxZjiZTdbzGi1jTrDpHA=="
+)
+USERNAME_KEY = "aza3Zu3Z4cas_cf3eE1GAVyczd5XWAd3FhFdJ2z9gB8="
