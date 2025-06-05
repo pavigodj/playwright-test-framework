@@ -56,7 +56,7 @@ def get_custom_log_path():
             / str(c_time.year)
             / f"Month_{str(c_time.month)}"
             / f"Day_{str(c_time.day)}"
-            / str(c_time.time().strftime("%H-%M-%S"))
+            / str(c_time.time())
         )
 
     base_path.mkdir(parents=True, exist_ok=True)
