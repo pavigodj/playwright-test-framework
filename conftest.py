@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 import pytest
 from playwright.async_api import async_playwright
@@ -9,6 +10,7 @@ from playwright.sync_api import Page
 from playwright.sync_api import sync_playwright
 from playwright.sync_api._generated import Browser as Sync_Browser
 
+from utils.common import get_custom_log_path
 from utils.settings import BASE_URL_DEV
 from utils.settings import BASE_URL_STAGE
 
@@ -116,9 +118,45 @@ def base_url(env):
 
 
 @pytest.fixture(scope="function")
-def navigate_to_homepage(page_sync: Page, base_url):
+def navigate_to_login(page_sync: Page, base_url):
     try:
         page_sync.goto(base_url)
         yield page_sync
     except (Exception, TimeoutError) as e:
         pytest.fail(f"Unable to login to {base_url} with exception {e}")
+
+
+# -----------------------------------------------------
+# HTML Test Report generation handled using hooks
+# (pytest_cmdline_main : hook that gets called once before
+# the tests are run, and it lets you customize the test
+# execution environment.)
+# -----------------------------------------------------
+
+
+def pytest_cmdline_main(config):
+    config.custom_log_path = get_custom_log_path()  # Custom logs directory
+    html_file = str(
+        config.custom_log_path / "pytest_report.html"
+    )  # Final report path
+    config.option.htmlpath = (
+        html_file  # Set HTML report path for pytest-html plugin
+    )
+    config.option.self_contained_html = True  # Bundle CSS, JS into one file
+    config.is_log_path_set = False  # Used as a flag for logging setup
+
+
+# ----------------------------------------------------------
+# this is a hook which runs before every tests
+# -----------------------------------------------------------
+
+
+@pytest.hookimpl(hookwrapper=True, tryfirst=True)
+def pytest_runtest_setup(item):
+    config = item.config
+    if not config.is_log_path_set:
+        logging_plugin = config.pluginmanager.get_plugin("logging-plugin")
+        filename = Path("pytest_console.log")
+        logging_plugin.set_log_path(str(config.custom_log_path / filename))
+        config.is_log_path_set = True  # Ensure this runs only once
+    yield
