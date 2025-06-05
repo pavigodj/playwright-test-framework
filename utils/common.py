@@ -1,6 +1,7 @@
 # from __future__ import annotations
 from __future__ import annotations
 
+import logging
 import os
 from datetime import datetime
 from pathlib import Path
@@ -14,17 +15,34 @@ from utils._secrets import USERNAME_KEY
 
 # To return broken assets when made a call to any event
 
+logger = logging.getLogger(__name__)
+
 
 def broken_assets_response(page):
     broken_assets = []
 
     def log_failed_requests(response):
         if response.status >= 400:
+            logger.error(f"Broken asset found : {broken_assets}")
             broken_assets.append((response.url, response.status))
 
     page.on("response", log_failed_requests)
 
     return broken_assets
+
+
+# To fetch the POST request made when an action performed in the FE
+
+
+def fetch_requested_api(page):
+    api_requests = []
+
+    def track_api(request):
+        if request.method == "POST":
+            api_requests.append(request.url)
+
+    page.on("request", track_api)
+    return api_requests
 
 
 # To fetch the credentials(can be parametrized as well),

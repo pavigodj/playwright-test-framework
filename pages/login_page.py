@@ -36,3 +36,9 @@ class LoginPage:
 
     def click_login_button(self):
         self.login_bttn().click()
+
+    def login_by_enter_credentials(self, username, password, session_type):
+        self.enter_username(username)
+        self.enter_password(password)
+        self.select_location_session(session_type)
+        self.click_login_button()
