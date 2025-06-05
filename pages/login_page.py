@@ -6,7 +6,7 @@ from playwright.sync_api import Page as sync_page
 from utils.locators import HomepageLocators
 
 
-class Login:
+class LoginPage:
     def __init__(self, page: sync_page | async_page):
         self.page = page
 
@@ -27,11 +27,9 @@ class Login:
 
     def enter_username(self, username):
         self.username_field().type(username)
-        # self.page.locator(HomepageLocators.username).type(username)
 
     def enter_password(self, password):
         self.password_field().type(password)
-        # self.page.locator(HomepageLocators.password).type(password)
 
     def select_location_session(self, session_type):
         self.page.get_by_text(session_type).click()
