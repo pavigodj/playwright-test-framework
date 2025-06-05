@@ -54,3 +54,6 @@ coverage.xml
 # OS files
 .DS_Store
 Thumbs.db
+
+# folder
+assets/
