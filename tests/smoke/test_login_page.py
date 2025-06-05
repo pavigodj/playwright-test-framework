@@ -5,7 +5,7 @@ import logging
 import pytest
 from playwright.sync_api import Page
 
-from pages.login_page import Login
+from pages.login_page import LoginPage
 from utils.common import broken_assets_response
 from utils.common import get_credentials
 
@@ -34,7 +34,7 @@ def test_no_broken_assets(page_sync: Page, base_url):
 
 
 def test_logo_presence(navigate_to_homepage):
-    login_page = Login(navigate_to_homepage)
+    login_page = LoginPage(navigate_to_homepage)
     login_page.logo_visibility()
     assert login_page.logo_visibility(), "Missing logo"
 
@@ -44,7 +44,7 @@ def test_logo_presence(navigate_to_homepage):
 
 
 def test_presence_of_elements(navigate_to_homepage):
-    login_page = Login(navigate_to_homepage)
+    login_page = LoginPage(navigate_to_homepage)
     assert login_page.username_field(), "username input field missing"
     assert login_page.password_field(), "username input field missing"
     assert login_page.login_bttn(), "login button not enabled"
@@ -55,12 +55,12 @@ def test_presence_of_elements(navigate_to_homepage):
 
 
 def test_login(navigate_to_homepage):
-    login_page = Login(navigate_to_homepage)
+    login_page = LoginPage(navigate_to_homepage)
     username, password = get_credentials()
     login_page.enter_username(username)
     login_page.enter_password(password)
     login_page.select_location_session(session_type="Registration Desk")
     login_page.click_login_button()
     assert (
-        navigate_to_homepage.title() in "Home"
+        "Home" in navigate_to_homepage.title()
     ), f"Has {navigate_to_homepage.title()} as title"
