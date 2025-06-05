@@ -7,6 +7,7 @@ from playwright.sync_api import Page
 
 from pages.login_page import LoginPage
 from utils.common import broken_assets_response
+from utils.common import fetch_requested_api
 from utils.common import get_credentials
 
 logger = logging.getLogger(__name__)
@@ -20,7 +21,8 @@ def test_login_page_title(navigate_to_login: Page):
     assert "Login" in homepage_title, f"Title found as {homepage_title}"
 
 
-# Sample code to showcase useful markers such as xfail for failed test cases
+# Sample code to showcase useful markers(in pytest),
+# such as xfail for failed test cases
 # SMK-2: test to check broken assets
 
 
@@ -69,3 +71,52 @@ def test_login(navigate_to_login):
     assert (
         "Home" in navigate_to_login.title()
     ), f"Has {navigate_to_login.title()} as title"
+
+
+# Combined SMK-1, SMK-3 and SMK-4 using subtests :
+# To showcase that logically associated
+# test cases can be combined together
+
+
+def test_login_page_ui_elements(navigate_to_login, subtests):
+    login_page = LoginPage(navigate_to_login)
+
+    with subtests.test(msg="Title validation"):
+        assert (
+            "Login" in login_page.title()
+        ), f"Title found as {login_page.title()}"
+
+    with subtests.test(msg="Logo is visible"):
+        assert login_page.logo_visibility(), "Missing logo"
+
+    with subtests.test(msg="Username field present"):
+        assert login_page.username_field(), "Username input field missing"
+
+    with subtests.test(msg="Password field present"):
+        assert login_page.password_field(), "Password input field missing"
+
+    with subtests.test(msg="Login button enabled"):
+        assert login_page.login_bttn(), "Login button not enabled"
+
+    with subtests.test(msg="Can't log in link present"):
+        assert login_page.cant_login_link(), "Can't login link not enabled"
+
+
+# SMK-6 : API request validation after login
+# (To check if FE is communicating with BE)
+
+
+def test_login_api_called_on_login(page_sync, base_url):
+    api_requests = fetch_requested_api(page_sync)
+    page_sync.goto(base_url)
+    username, password = get_credentials()
+    login_page = LoginPage(page_sync)
+    login_page.login_by_enter_credentials(
+        username,
+        password,
+        session_type="Registration Desk",
+    )
+
+    assert any(
+        "login" in url for url in api_requests
+    ), "Login API not triggered!"

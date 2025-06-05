@@ -27,6 +27,20 @@ def broken_assets_response(page):
     return broken_assets
 
 
+# To fetch the POST request made when an action performed in the FE
+
+
+def fetch_requested_api(page):
+    api_requests = []
+
+    def track_api(request):
+        if request.method == "POST":
+            api_requests.append(request.url)
+
+    page.on("request", track_api)
+    return api_requests
+
+
 # To fetch the credentials(can be parametrized as well),
 # generally got from secrets from the environments(eg:git secrets)
 
