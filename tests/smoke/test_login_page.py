@@ -5,7 +5,7 @@ import logging
 import pytest
 from playwright.sync_api import Page
 
-from pages.login_page import LoginPage
+from pages.sync_pom.login_page import LoginPage
 from utils.common import broken_assets_response
 from utils.common import fetch_requested_api
 from utils.common import get_credentials
@@ -157,3 +157,11 @@ def test_broken_assets_after_login(page_sync, base_url):
     assert (
         not broken_assets
     ), f"Broken assets found after login: {broken_assets}"
+
+
+# SMK-8 To test cant login link
+
+
+def test_cant_login_link(navigate_to_login):
+    login_page = LoginPage(navigate_to_login)
+    assert login_page.is_cant_login_modal(), "Pop up modal not visible"

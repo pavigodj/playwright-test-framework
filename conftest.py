@@ -1,18 +1,22 @@
 from __future__ import annotations
 
+import logging
 import os
 from pathlib import Path
 
 import pytest
 from playwright.async_api import async_playwright
+from playwright.async_api import Page as Async_Page
 from playwright.async_api._generated import Browser as Async_Browser
-from playwright.sync_api import Page
+from playwright.sync_api import Page as Sync_Page
 from playwright.sync_api import sync_playwright
 from playwright.sync_api._generated import Browser as Sync_Browser
 
 from utils.common import get_custom_log_path
 from utils.settings import BASE_URL_DEV
 from utils.settings import BASE_URL_STAGE
+
+logger = logging.getLogger(__name__)
 
 
 # ────────────────────────────────
@@ -51,7 +55,7 @@ def page_sync(browser_sync: Sync_Browser):
 @pytest.fixture(scope="session")
 async def browser_async():
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
+        browser = await p.chromium.launch(headless=False)
         yield browser
         await browser.close()
 
@@ -118,10 +122,20 @@ def base_url(env):
 
 
 @pytest.fixture(scope="function")
-def navigate_to_login(page_sync: Page, base_url):
+def navigate_to_login(page_sync: Sync_Page, base_url):
     try:
+        logger.info("Navigating to {base_url}")
         page_sync.goto(base_url)
         yield page_sync
+    except (Exception, TimeoutError) as e:
+        pytest.fail(f"Unable to login to {base_url} with exception {e}")
+
+
+async def navigate_to_login_async(page_async: Async_Page, base_url):
+    try:
+        logger.info("Navigating to {base_url}")
+        await page_async.goto(base_url)
+        yield page_async
     except (Exception, TimeoutError) as e:
         pytest.fail(f"Unable to login to {base_url} with exception {e}")
 
@@ -160,3 +174,31 @@ def pytest_runtest_setup(item):
         logging_plugin.set_log_path(str(config.custom_log_path / filename))
         config.is_log_path_set = True  # Ensure this runs only once
     yield
+
+
+#  -----------------------------------------------
+# Browser factory : for multiple session tests
+# ------------------------------------------------
+
+
+@pytest.fixture()
+async def browser_factory(browser_type, request):
+    browser_type = request.config.getoption("--browser")
+    async with async_playwright() as p:
+        launched_browsers = []
+
+        async def create_browsers(n: int):
+            for _ in range(n):
+                if browser_type == "chromium":
+                    browser = await p.chromium.launch(headless=False)
+                elif browser_type == "firefox":
+                    browser = await p.firefox.launch(headless=False)
+                else:
+                    browser = await p.chromium.launch(headless=False)
+                launched_browsers.append(browser)
+            return launched_browsers
+
+        yield create_browsers
+
+        for browser in launched_browsers:
+            await browser.close()

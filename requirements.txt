@@ -6,3 +6,4 @@ pytest-xdist==3.7.0
 cryptography==45.0.3
 pytest-subtests==0.14.1
 google-genai==1.19.0
+pytest-asyncio==1.0.0

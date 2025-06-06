@@ -3,6 +3,10 @@
 # Regression Test Suite for Authentication
 from __future__ import annotations
 
+import asyncio
+
+from utils.common import perform_login
+
 
 def test_valid_login():
     """Verify successful login with valid credentials."""
@@ -66,10 +70,16 @@ def test_session_timeout_idle():
     pass
 
 
-def test_session_timeout_concurrent_login():
+# @pytest.mark.asyncio
+async def test_session_timeout_concurrent_login_1(browser_factory, base_url):
     """Verify session handling during
     concurrent logins from different devices."""
-    pass
+    browsers = await browser_factory(2)
+    results = await asyncio.gather(
+        *[perform_login(browser, base_url) for browser in browsers]
+    )
+    for result in results:
+        assert ("Home" in result) or ("Logged in" in result)
 
 
 def test_session_timeout_extend_session():
