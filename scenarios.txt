@@ -1,0 +1,4 @@
+Verify login functionality
+Validate session timeout
+Check logout behavior
+Ensure password reset works
