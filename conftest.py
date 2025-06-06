@@ -27,7 +27,7 @@ def browser_sync(request):
     browser_type = request.config.getoption("--browser")
     if browser_type == "chromium":
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=False)
+            browser = p.chromium.launch(headless=True)
             yield browser
             browser.close()
     elif browser_type == "firefox":
@@ -37,7 +37,7 @@ def browser_sync(request):
             browser.close()
     else:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=False)
+            browser = p.chromium.launch(headless=True)
             yield browser
             browser.close()
 
@@ -55,7 +55,7 @@ def page_sync(browser_sync: Sync_Browser):
 @pytest.fixture(scope="session")
 async def browser_async():
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)
+        browser = await p.chromium.launch(headless=True)
         yield browser
         await browser.close()
 
@@ -190,11 +190,11 @@ async def browser_factory(browser_type, request):
         async def create_browsers(n: int):
             for _ in range(n):
                 if browser_type == "chromium":
-                    browser = await p.chromium.launch(headless=False)
+                    browser = await p.chromium.launch(headless=True)
                 elif browser_type == "firefox":
-                    browser = await p.firefox.launch(headless=False)
+                    browser = await p.firefox.launch(headless=True)
                 else:
-                    browser = await p.chromium.launch(headless=False)
+                    browser = await p.chromium.launch(headless=True)
                 launched_browsers.append(browser)
             return launched_browsers
 
