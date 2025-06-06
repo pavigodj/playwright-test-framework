@@ -8,6 +8,7 @@ from pathlib import Path
 
 from cryptography.fernet import Fernet
 
+from pages.async_pom.login_page import LoginPage
 from utils._secrets import ENCRYPTED_PASSWORD
 from utils._secrets import ENCRYPTED_USERNAME
 from utils._secrets import PASSWORD_KEY
@@ -92,3 +93,27 @@ def get_custom_log_path():
         latest_log_link_pathobj.symlink_to(base_path, target_is_directory=True)
 
     return base_path
+
+
+async def perform_login(browser, base_url):
+    context = await browser.new_context()
+    page = await context.new_page()
+    login_page = LoginPage(page)
+
+    # Navigate to login page
+    await page.goto(base_url)
+    print(f"Navigated to: {base_url}")
+
+    # Perform login
+    username, password = get_credentials()
+    print(f"Using credentials: {username}/{password}")
+    await login_page.login_by_enter_credentials(
+        username, password, session_type="Pharmacy"
+    )
+
+    # Wait for dashboard/home page
+    await page.wait_for_url("**/home.page", timeout=7000)
+    html_content = await page.content()
+
+    await context.close()
+    return html_content

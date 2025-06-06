@@ -3,15 +3,30 @@
 # Sanity Test Suite
 from __future__ import annotations
 
+from pages.sync_pom.login_page import LoginPage
+from utils.common import get_credentials
 
-def test_login_successful():
+
+def test_login_successful(navigate_to_login):
     """Verify successful login with valid credentials."""
-    pass
+    login_page = LoginPage(navigate_to_login)
+    username, password = get_credentials()
+    login_page.login_by_enter_credentials(username, password, "Pharmacy")
+    assert (
+        "Home" in navigate_to_login.title()
+    ), f"Has {navigate_to_login.title()} as title"
 
 
-def test_login_failed_invalid_credentials():
+def test_login_failed_invalid_credentials(navigate_to_login):
     """Verify failed login with invalid credentials."""
-    pass
+    login_page = LoginPage(navigate_to_login)
+    username, password = get_credentials()
+    login_page.login_by_enter_credentials(
+        username.upper() + "xyz", password, "Pharmacy"
+    )
+    assert (
+        "Login" in navigate_to_login.title()
+    ), f"Has {navigate_to_login.title()} as title"
 
 
 def test_login_locked_account():
