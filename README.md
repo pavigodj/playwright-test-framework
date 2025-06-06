@@ -13,7 +13,9 @@ Plan:
 - [ ] Set up pytest.ini :- helps in configuring the pytest configuration for log level, markers and default browser set up
 - [ ] Set up conftest.py - for browser set up
 - [ ] Set up utils folder - for holding common helper, contants, locators
-- [ ] tests/smoke/test_homepage.py -
+- [ ] tests/smoke/test_homepage.py
+- set up Dockerfile to run smoke/sanity/
+-
 
 ### Technical Details of Playwright:
 
