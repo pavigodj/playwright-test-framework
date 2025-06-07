@@ -1,21 +1,11 @@
-### playwright-test-framework
+### Playwright-test-framework
+This is a project to showcase the following:
 
-Plan:
-
-- To select a stable website for automation
-- To write test plan
-- To set up test framework structure
-- To incorportate UI and API tests scripts
-- To integrate with reports and display the test report
-
-- [ ] Setup venv
-- [ ] Set up requirements.txt
-- [ ] Set up pytest.ini :- helps in configuring the pytest configuration for log level, markers and default browser set up
-- [ ] Set up conftest.py - for browser set up
-- [ ] Set up utils folder - for holding common helper, contants, locators
-- [ ] tests/smoke/test_homepage.py
-- set up Dockerfile to run smoke/sanity/
--
+- [ ] Structure of test framework using playwight and pytest framework.
+- [ ] Use of POM and monolithic design.
+- [ ] Demonstrated gemini.ai-flash 2.0 to generate test cases from test scenario file
+- [ ] Run the tests using fastapi-swaggerUI and generate pytes-html report
+- [ ] Demonstrated containerization using Docker
 
 ### Technical Details of Playwright:
 
