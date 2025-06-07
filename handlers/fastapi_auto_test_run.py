@@ -20,7 +20,7 @@ PYTEST_REPORT_PATH = "Reports/latest/pytest_report.html"
 
 @router.post(
     "/run-tests",
-    tags=["Run Automation Tests"],
+    tags=["Automation"],
     summary="To run smoke/sanity/regression",
 )
 async def run_tests(
